@@ -1,0 +1,17 @@
+extends: default
+
+ignore: |
+  .git/
+  .github/
+  .cache/
+  **/.cache/
+  **/charts/
+  **/vendor/
+
+rules:
+  document-start: disable
+  empty-lines: disable
+  line-length:
+    max: 140
+    level: warning
+

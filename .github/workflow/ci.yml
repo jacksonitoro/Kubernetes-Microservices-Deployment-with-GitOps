@@ -1,0 +1,39 @@
+name: CI - Kubernetes Manifests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  validate-manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: |
+          python -m pip install --upgrade pip
+          pip install yamllint
+
+      - name: Run yamllint
+        run: |
+          yamllint -d "{extends: default, rules: {line-length: {max: 140, level: warning}}}" .
+
+      - name: Install kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz -o kubeconform.tar.gz
+          tar -xzf kubeconform.tar.gz
+          sudo mv kubeconform /usr/local/bin/kubeconform
+          kubeconform -v
+
+      - name: Validate Kubernetes manifests with kubeconform
+        run: |
+          # Validate only Kubernetes YAML (skip .github workflow YAML)
+          find k8s -type f \( -name "*.yml" -o -name "*.yaml" \) -print0 \
+            | xargs -0 kubeconform \
+              -strict \
+              -ignore-missing-schemas \
+              -summary
+
