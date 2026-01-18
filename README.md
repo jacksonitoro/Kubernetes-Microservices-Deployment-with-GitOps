@@ -32,6 +32,8 @@ argocd/
   ci.yml             # yamllint + kubeconform
 
 ## Prerequisites
+
+```
 **Install the following tools:**
 - Docker
 - kubectl
@@ -43,27 +45,30 @@ argocd/
 
 ## 1. Create a Kubernetes Cluster
 
+```text
 
 
-### kind create cluster --name myfirst-demo
-### kubectl config use-context kind-myfirst-demo
+ kind create cluster --name myfirst-demo
+ kubectl config use-context kind-myfirst-demo
 
 ## 2. Install Argo CD
+
+````text
 
  kubectl create namespace argocd
  kubectl apply -n argocd \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
+
 ### Wait until Argo CD is ready:
 
-
-
+```text
  kubectl get pods -n argocd -w
 
 ## 3. Create the Database Secret (Required)
 ### Secrets are intentionally not stored in Git.
 
-
+```text
  kubectl -n mymicro create secret generic db-secret \
   --from-literal=POSTGRES_USER=appuser \
   --from-literal=POSTGRES_PASSWORD=changeme \
@@ -73,15 +78,17 @@ argocd/
 
 ### Apply the Argo CD Application:
 
-
+```text
  kubectl apply -f argocd/mymicro-app.yaml
 
 ## Check status:
 
-
+```text
  kubectl -n argocd get applications
 
 ## Argco CD will automatically:
+
+````
 - Create resources
 - Keep them in sync
 - Self-heal drift
@@ -90,16 +97,17 @@ argocd/
 ## Option 1: Port Forward (Fastest)
 
 
-
+```text
  make port-forward-frontend
 
 ### Open in browser:
 
+```text
  http://localhost:8085   # any port of your choice
 
 ## APIs (Optional)
 
-
+```text
  make port-forward-users
  make port-forward-orders
 
@@ -114,7 +122,7 @@ argocd/
 
 ## Drift Example
 
-
+```text
 
  kubectl -n mymicro scale deploy/frontend --replicas=1
 
@@ -123,6 +131,7 @@ argocd/
 ## CI Validation
 ### On every push or pull request:
 
+```text
     - yamllint checks YAML formatting
     - kubeconform validates kubernetes schemas
 
@@ -132,6 +141,7 @@ argocd/
 ## Secrets Management
 
 ### Current approach:
+```
     - Secrets created manually (safe for local/dev)
 ### Recommended future approaches:
     - Sealed Secrets
@@ -139,7 +149,7 @@ argocd/
 
 ## Common Commands
 
-
+```text
 make status                 # Show cluster status
 make port-forward-frontend  # Access frontend
 make deploy-argocd          # Reapply Argo CD app
