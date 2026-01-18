@@ -29,3 +29,26 @@
               | svc :5432  |   | svc :6379  |
               +------------+   +------------+
 
+
+
+## Technologies & Tools
+
+              | Category | Tools |
+              |--------|------|
+              | Container Orchestration | Kubernetes |
+              | Local Cluster | kind |
+              | GitOps | Argo CD |
+              | CI Validation | GitHub Actions |
+              | YAML Linting | yamllint |
+              | Schema Validation | kubeconform |
+              | Database | PostgreSQL |
+              | Cache | Redis |
+              | Build Tooling | Make |
+
+
+
+
+
+
+
+

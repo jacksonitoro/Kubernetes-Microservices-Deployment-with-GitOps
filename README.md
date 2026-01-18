@@ -15,7 +15,7 @@ A Kubernetes-deployed microservices stack (frontend + two backend APIs) backed b
 
 See: [docs/architecture.md](docs/architecture.md)
 
-## Repository Layout
+## Repository Structure
 
 ```text
 k8s/
@@ -30,4 +30,125 @@ argocd/
   mymicro-app.yaml   # Argo CD Application (GitOps)
 .github/workflows/
   ci.yml             # yamllint + kubeconform
+
+## Prerequisites
+**Install the following tools:**
+- Docker
+- kubectl
+- kind 
+- Git
+- make
+
+## Step-by-Step Setup
+
+## 1. Create a Kubernetes Cluster
+
+
+
+### kind create cluster --name myfirst-demo
+### kubectl config use-context kind-myfirst-demo
+
+## 2. Install Argo CD
+
+ kubectl create namespace argocd
+ kubectl apply -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+### Wait until Argo CD is ready:
+
+
+
+ kubectl get pods -n argocd -w
+
+## 3. Create the Database Secret (Required)
+### Secrets are intentionally not stored in Git.
+
+
+ kubectl -n mymicro create secret generic db-secret \
+  --from-literal=POSTGRES_USER=appuser \
+  --from-literal=POSTGRES_PASSWORD=changeme \
+  --from-literal=POSTGRES_DB=appdb
+
+## 4. Deploy the Application (GitOps)
+
+### Apply the Argo CD Application:
+
+
+ kubectl apply -f argocd/mymicro-app.yaml
+
+## Check status:
+
+
+ kubectl -n argocd get applications
+
+## Argco CD will automatically:
+- Create resources
+- Keep them in sync
+- Self-heal drift
+
+## Accessing the Application
+## Option 1: Port Forward (Fastest)
+
+
+
+ make port-forward-frontend
+
+### Open in browser:
+
+ http://localhost:8085   # any port of your choice
+
+## APIs (Optional)
+
+
+ make port-forward-users
+ make port-forward-orders
+
+## GitOps Workflow
+### 1. Make changes to Kubernetes manifests
+
+### 2. Commit and push to main
+
+### 3. Argo CD detects changes
+
+### 4. Cluster state is reconciled automatically
+
+## Drift Example
+
+
+
+ kubectl -n mymicro scale deploy/frontend --replicas=1
+
+## Argo CD will automatically restore the replica count from Git.
+
+## CI Validation
+### On every push or pull request:
+
+    - yamllint checks YAML formatting
+    - kubeconform validates kubernetes schemas
+
+### This prevents invalid manifests from reaching the cluster.
+
+
+## Secrets Management
+
+### Current approach:
+    - Secrets created manually (safe for local/dev)
+### Recommended future approaches:
+    - Sealed Secrets
+    - External Secrets Operator (Vault/Cloud Secret Managers)
+
+## Common Commands
+
+
+make status                 # Show cluster status
+make port-forward-frontend  # Access frontend
+make deploy-argocd          # Reapply Argo CD app
+make logs-frontend          # View frontend logs
+
+
+
+
+
+
+
 
