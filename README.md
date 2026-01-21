@@ -33,6 +33,7 @@ argocd/
 
 ## Prerequisites
 
+
 ```
 **Install the following tools:**
 - Docker
@@ -53,7 +54,7 @@ argocd/
 
 ## 2. Install Argo CD
 
-````text
+```text
 
  kubectl create namespace argocd
  kubectl apply -n argocd \
